@@ -120,10 +120,10 @@ const deleteProduct = async (req, res) => {
                 const category = await Category.findById(categoyId)
                 console.log("before", category.products);
 
-                category.products.filter((item) => console.log("item", item)
-                )
-                console.log("after", category.products);
-                // await category.save()
+                if (category) {
+                    category.products.remove(req.params.id)
+                    await category.save()
+                }
             }
 
             return res.status(200).json("Product deleted successfully!")
