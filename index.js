@@ -1,6 +1,7 @@
 const express = require("express")
 const { default: mongoose } = require("mongoose")
 const app = express()
+const bodyParser = require("body-parser")
 const dotenv = require('dotenv')
 const cors = require('cors')
 const productRoute = require('./routes/product')
@@ -8,6 +9,7 @@ const categoryRoute = require('./routes/category')
 
 dotenv.config()
 app.use(express.json())
+app.use(bodyParser.json())
 app.use(cors())
 
 
