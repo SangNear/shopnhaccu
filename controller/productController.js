@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Product = require('../models/Product');
 const Category = require("../models/Category");
+const {toSlug} = require('../lib/utils')
 //SEARCH PRODUCT BY PRODUCT
 const getProductByName = async (req, res) => {
     try {
@@ -35,20 +36,21 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+
+
 //CREATE A PRODUC
 const createProduct = async (req, res) => {
     try {
-        const { title, description, categories, quantity, price } = req.body;
-        console.log(req.body);
+        const { name, description, categories, price, quantity, brand, detail, specification, video, salePrice } = req.body;
 
         const image = req.file;
 
-        if (!title) {
+        if (!name) {
             return res.status(400).json("Title is not empty");
         }
-        const titleIsExists = await Product.findOne({ title: title });
-        if (titleIsExists) {
-            return res.status(500).json("Title is exists! Choose another one");
+        const nameIsExists = await Product.findOne({ name: name });
+        if (nameIsExists) {
+            return res.status(500).json("Name is exists! Choose another one");
         }
         // if (!image) {
         //     return res.status(400).json("Image is not empty");
@@ -63,13 +65,20 @@ const createProduct = async (req, res) => {
 
 
         const newProduct = await Product.create({
-            title,
+            name,
+            slug: toSlug(name),
             description,
             image: imgBase64URL,
             categories,
             quantity,
             price,
+            salePrice,
+            detail,
+            video,
+            specification,
+            brand
         });
+
 
         // fs.unlinkSync(imgPath);
 
