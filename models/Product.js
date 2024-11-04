@@ -32,11 +32,16 @@ const ProductSchema = new mongoose.Schema(
         },
 
         detail: {
-            type: String 
-        },
-        specification: {
             type: String
         },
+        specification:
+        {
+            model: String,
+            color: String,
+            brand: String,
+            original: String,
+        }
+        ,
         video: {
             type: String
         },

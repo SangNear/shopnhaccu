@@ -2,17 +2,22 @@ const fs = require("fs");
 const path = require("path");
 const Product = require('../models/Product');
 const Category = require("../models/Category");
-const {toSlug} = require('../lib/utils')
+const { toSlug } = require('../lib/utils')
 //SEARCH PRODUCT BY PRODUCT
 const getProductByName = async (req, res) => {
     try {
-        console.log(req.body.title);
+        console.log(req.body.slug);
 
-        const { title } = req.body
+        const slug = req.params.slug
 
-        const regexPattern = new RegExp(title.split(' ').join('|'), 'i');
+        if (!slug) {
+            // If 'slug' is undefined or empty, send a bad request response
+            return res.status(400).json({ error: 'Product slug is required' });
+        }
 
-        const product = await Product.find({ title: { $regex: regexPattern } }).populate('categories');
+        const regexPattern = new RegExp(slug.split(' ').join('|'), 'i');
+
+        const product = await Product.find({ slug: { $regex: regexPattern } }).populate('categories');
         if (product) {
             return res.status(200).json(product)
         }
@@ -36,6 +41,24 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+const getProductBySlug = async (req, res) => {
+
+    const name = req.params.name;
+
+    try {
+        const products = await Product.find({ name: { $regex: name } });
+        if (products > 0) {
+            return res.status(200).json(products)
+        }
+        else {
+            return res.status(400).json("Product is not exists in system, Try again!")
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(404).json(error)
+    }
+}
+
 
 
 //CREATE A PRODUC
@@ -46,7 +69,7 @@ const createProduct = async (req, res) => {
         const image = req.file;
 
         if (!name) {
-            return res.status(400).json("Title is not empty");
+            return res.status(400).json("Name is not empty");
         }
         const nameIsExists = await Product.findOne({ name: name });
         if (nameIsExists) {
@@ -106,7 +129,6 @@ const createProduct = async (req, res) => {
 //GET PRODUCT BY ID
 const getProductById = async (req, res) => {
     try {
-
         const product = await Product.findOne({ _id: req.params.id }).populate('categories')
         if (product) {
             return res.status(200).json(product)
@@ -146,4 +168,4 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-module.exports = { createProduct, getAllProduct, getProductByName, getProductById, deleteProduct }
+module.exports = { createProduct, getAllProduct, getProductByName, getProductBySlug, getProductById, deleteProduct }

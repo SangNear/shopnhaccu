@@ -4,7 +4,7 @@ const Product = require('../models/Product')
 
 const getAllCategory = async (req, res) => {
     try {
-        const categories = await Category.find().sort({ createdAt: -1 })
+        const categories = await Category.find().sort({ createdAt: -1 }).populate('products')
         return res.status(200).json(categories)
     } catch (error) {
         console.log(error)
